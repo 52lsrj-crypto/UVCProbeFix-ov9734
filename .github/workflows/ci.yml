@@ -1,0 +1,141 @@
+name: Build and audit
+
+on:
+  push:
+    branches: [main]
+    tags: ['v*']
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: ${{ github.ref_type != 'tag' }}
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  build:
+    name: Release build and regression audit
+    runs-on: macos-15-intel
+    timeout-minutes: 30
+    outputs:
+      version: ${{ steps.metadata.outputs.version }}
+      build: ${{ steps.metadata.outputs.build }}
+      artifact: ${{ steps.metadata.outputs.artifact }}
+    steps:
+      - name: Check out source
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Read source version and validate tag
+        id: metadata
+        run: |
+          version="$(/usr/bin/plutil -extract CFBundleShortVersionString raw -o - UVCProbeFix/Info.plist)"
+          build="$(/usr/bin/plutil -extract CFBundleVersion raw -o - UVCProbeFix/Info.plist)"
+          [[ "$version" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]
+          [[ "$build" =~ ^[0-9]+$ ]]
+          if [[ "$GITHUB_REF_TYPE" == tag && "$GITHUB_REF_NAME" != "v$version" ]]; then
+            echo "::error::Release tag must match source version v$version."
+            exit 1
+          fi
+          printf 'version=%s\nbuild=%s\nartifact=UVCProbeFix-%s-build%s-RELEASE\n' \
+            "$version" "$build" "$version" "$build" >> "$GITHUB_OUTPUT"
+
+      - name: Record toolchain
+        run: |
+          {
+            /usr/bin/sw_vers
+            /usr/bin/uname -m
+            /usr/bin/xcodebuild -version
+            /usr/bin/xcrun --show-sdk-version
+          } | /usr/bin/tee "$RUNNER_TEMP/UVCProbeFix-toolchain.log"
+          [[ "$(/usr/bin/uname -m)" == x86_64 ]]
+
+      - name: Build, test, analyze, sign, and verify Release ZIP
+        env:
+          UVCP_CONFIGURATION: Release
+        run: |
+          /bin/bash ./Build.command </dev/null 2>&1 | /usr/bin/tee "$RUNNER_TEMP/UVCProbeFix-CI.log"
+
+      - name: Prepare release assets and checksums
+        env:
+          VERSION: ${{ steps.metadata.outputs.version }}
+          BUILD_NUMBER: ${{ steps.metadata.outputs.build }}
+        run: |
+          mkdir -p release-assets
+          cp "dist/UVCProbeFix-$VERSION-RELEASE.zip" \
+            OpenCore-Kernel-Add-entry.plist README.md LICENSE THIRD_PARTY_NOTICES.md \
+            Tools/PostBoot-UVCProbeFix-Verify.command release-assets/
+          {
+            printf 'UVCProbeFix %s (build %s)\nCommit: %s\nRun: %s/%s/actions/runs/%s\n\n' \
+              "$VERSION" "$BUILD_NUMBER" "$GITHUB_SHA" "$GITHUB_SERVER_URL" "$GITHUB_REPOSITORY" "$GITHUB_RUN_ID"
+            cat "$RUNNER_TEMP/UVCProbeFix-toolchain.log"
+          } > release-assets/BUILD-INFO.txt
+          (
+            cd release-assets
+            /usr/bin/shasum -a 256 \
+              "UVCProbeFix-$VERSION-RELEASE.zip" OpenCore-Kernel-Add-entry.plist \
+              README.md LICENSE THIRD_PARTY_NOTICES.md PostBoot-UVCProbeFix-Verify.command \
+              BUILD-INFO.txt > SHA256SUMS
+            /usr/bin/shasum -a 256 -c SHA256SUMS
+          )
+
+      - name: Upload release assets
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: ${{ steps.metadata.outputs.artifact }}
+          path: release-assets/
+          if-no-files-found: error
+          retention-days: 30
+          compression-level: 0
+
+      - name: Upload audit logs
+        if: always()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: UVCProbeFix-audit-logs-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            ${{ runner.temp }}/UVCProbeFix-*.log
+            build/Build-UVCProbeFix.log
+            .test-build/fuzz/*.stdout
+            .test-build/fuzz/*.stderr
+          include-hidden-files: true
+          if-no-files-found: warn
+          retention-days: 14
+
+  release:
+    name: Publish tagged release
+    if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')
+    needs: build
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    permissions:
+      contents: write
+    steps:
+      - name: Download verified release assets
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          name: ${{ needs.build.outputs.artifact }}
+          path: release-assets
+
+      - name: Verify checksums
+        working-directory: release-assets
+        run: sha256sum --check SHA256SUMS
+
+      - name: Create GitHub Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          VERSION: ${{ needs.build.outputs.version }}
+          BUILD_NUMBER: ${{ needs.build.outputs.build }}
+        run: |
+          printf 'UVCProbeFix %s (build %s).\n\nSee README.md for compatibility and installation. SHA256SUMS covers all attached files.\n\nBuilt from commit %s.\n' \
+            "$VERSION" "$BUILD_NUMBER" "$GITHUB_SHA" > "$RUNNER_TEMP/release-notes.md"
+          gh release create "$GITHUB_REF_NAME" release-assets/* \
+            --repo "$GITHUB_REPOSITORY" --verify-tag \
+            --title "UVCProbeFix $VERSION" --notes-file "$RUNNER_TEMP/release-notes.md"

@@ -1,0 +1,118 @@
+{
+  "schemaVersion": 1,
+  "project": "UVCProbeFix",
+  "version": "0.3.1",
+  "policy": "Fixture identity is test/provenance data only. Generic production recovery must not branch on these device identities or fixed repair values.",
+  "fixtures": [
+    {
+      "path": "Tests/Fixtures/ASUS-25G241-known-good-handshake.json",
+      "sha256": "94a9fd3b9ceafbda6f30db357d2b90cb132edace5d829e95d7cb998efdfa5947",
+      "provenance": "Inherited 0.2.15 hardware trace from the physically verified Tahoe target; regression evidence only."
+    },
+    {
+      "path": "Tests/Fixtures/ASUS-known-good-descriptors.bin",
+      "sha256": "f9033a142cb1e55d0f1a0d723e79d00dcb5585c013bc4affea04e512773304a4",
+      "provenance": "Deterministic minimal UVC configuration reconstructed from the known-good ASUS path; negative-regression test data only."
+    },
+    {
+      "path": "Tests/Fixtures/ASUS-known-good-probe.bin",
+      "sha256": "de4731b57a3908e067c5361e592e500d701956770eba14a31bfa5cf888aa407c",
+      "provenance": "Canonical known-good ASUS PROBE regression bytes; must remain byte-identical through generic recovery."
+    },
+    {
+      "path": "Tests/Fixtures/Lenovo-174F1176-descriptors.bin",
+      "sha256": "c6d5756e824a5d4997f09c8a81a63100a7ab30485a55d118c0f579012699f84c",
+      "provenance": "Deterministic minimal UVC configuration reconstructed from the physically verified Lenovo descriptor fields; test data only, never used as a runtime identity rule."
+    },
+    {
+      "path": "Tests/Fixtures/Lenovo-25G229-success-handshake.json",
+      "sha256": "b975ed10a18dfa7f27256c2b07fbb46410b7b33ca8a50bcbe3e7958dbf5bf4ec",
+      "provenance": "Inherited 0.2.15 hardware trace from the physically verified Tahoe target; regression evidence only."
+    },
+    {
+      "path": "Tests/Fixtures/Lenovo-malformed-probe.bin",
+      "sha256": "0e1324c0e2d2c424f47b1d6f9977750705f1c2f5e63b5aee26b9f16bb35de012",
+      "provenance": "Canonical malformed Lenovo GET_CUR(PROBE) regression bytes reconstructed from the confirmed failing negotiation."
+    },
+    {
+      "path": "Tests/Fixtures/Lenovo-recovered-probe.bin",
+      "sha256": "46974fb89599fdbb6496e1b773907b41403dce52013a7b627c84b879883ca6ac",
+      "provenance": "Canonical recovered Lenovo PROBE bytes from the physically verified working negotiation."
+    },
+    {
+      "path": "Tests/Fixtures/synthetic-descriptors-continuous.bin",
+      "sha256": "e61c9ec8b402c9fbcff5764fa59866ead41eecb43bc39eead32396bdffc79fd6",
+      "provenance": "Deterministic synthetic UVC fixture generated for bounded parser/engine regression coverage; not a production device rule."
+    },
+    {
+      "path": "Tests/Fixtures/synthetic-descriptors-cross-format.bin",
+      "sha256": "9360d836b96a80b405a2b9d88452587d0d29c166c3480861d8c154daba9ac4eb",
+      "provenance": "Deterministic synthetic UVC fixture generated for bounded parser/engine regression coverage; not a production device rule."
+    },
+    {
+      "path": "Tests/Fixtures/synthetic-descriptors-mixed.bin",
+      "sha256": "b0c55f5813cd195a7d331790596f8b500a6fa1ff82c57d4097abc8d8484f9e66",
+      "provenance": "Deterministic synthetic UVC fixture generated for bounded parser/engine regression coverage; not a production device rule."
+    },
+    {
+      "path": "Tests/Fixtures/synthetic-endpoint-full.bin",
+      "sha256": "04746d2b7f6bebc3c3015b307a49e7398060e4ad2efc831a5c0e5edb2fdeccfe",
+      "provenance": "Deterministic synthetic UVC fixture generated for bounded parser/engine regression coverage; not a production device rule."
+    },
+    {
+      "path": "Tests/Fixtures/synthetic-endpoint-high-multi.bin",
+      "sha256": "7bfcbc73797217023e7c20910c3feb375d3ad5fae5e63f2bc2fc35d58a326b43",
+      "provenance": "Deterministic synthetic UVC fixture generated for bounded parser/engine regression coverage; not a production device rule."
+    },
+    {
+      "path": "Tests/Fixtures/synthetic-endpoint-high-reserved.bin",
+      "sha256": "a64cbe10c554f79a23e0d97113f1763e2f387be7dbdcf8d43aad376158ac1c53",
+      "provenance": "Deterministic synthetic UVC fixture generated for bounded parser/engine regression coverage; not a production device rule."
+    },
+    {
+      "path": "Tests/Fixtures/synthetic-endpoint-noniso.bin",
+      "sha256": "5c4131171d89bdef0d1bff72864a7ed0cceb8e94cede42104fe4478d04f8e49f",
+      "provenance": "Deterministic synthetic UVC fixture generated for bounded parser/engine regression coverage; not a production device rule."
+    },
+    {
+      "path": "Tests/Fixtures/synthetic-endpoint-ss-badcomp.bin",
+      "sha256": "3a8a264268aee5e0b6cba982cd75a87fe6fcedb99e20fb0edf2d02694d2fec64",
+      "provenance": "Deterministic synthetic UVC fixture generated for bounded parser/engine regression coverage; not a production device rule."
+    },
+    {
+      "path": "Tests/Fixtures/synthetic-endpoint-ss.bin",
+      "sha256": "3338488e2c99eccab32eaab40453343e700b57a700f32ae9b85a0a98e9fbeaa2",
+      "provenance": "Deterministic synthetic UVC fixture generated for bounded parser/engine regression coverage; not a production device rule."
+    },
+    {
+      "path": "Tests/Fixtures/synthetic-endpoint-wrong.bin",
+      "sha256": "375bd50e0d4a29873aad4305c3c1be8d77d88b4202077b05e962970f01dc9c48",
+      "provenance": "Deterministic synthetic UVC fixture generated for bounded parser/engine regression coverage; not a production device rule."
+    },
+    {
+      "path": "Tests/Fixtures/synthetic-equivalent-default2.bin",
+      "sha256": "a696d516903dc4c317192482f8ee133f65b529f1d63b21b2845d28d3fc948589",
+      "provenance": "Deterministic synthetic UVC fixture generated for bounded parser/engine regression coverage; not a production device rule."
+    },
+    {
+      "path": "Tests/Fixtures/synthetic-equivalent-interval.bin",
+      "sha256": "6179372dd2845c6c758ff4f23ab958a93773631266150b2afaf79b3994f74707",
+      "provenance": "Deterministic synthetic UVC fixture generated for bounded parser/engine regression coverage; not a production device rule."
+    },
+    {
+      "path": "Tests/Fixtures/synthetic-equivalent-lowest.bin",
+      "sha256": "956ffba512ec61c7a6c8ada84c275ba66ba7660131e5c8c2602f762f8498335c",
+      "provenance": "Deterministic synthetic UVC fixture generated for bounded parser/engine regression coverage; not a production device rule."
+    },
+    {
+      "path": "Tests/Fixtures/Sequoia-24A335-doProbeControl.bin",
+      "sha256": "3298c2f5911015cef6276d65e81e72df61382817a92c2c81b6d7fdde5433e76d",
+      "provenance": "Exact 0x454-byte x86_64 method extracted from the supplied Sequoia15.0 build24A335 runtime UVC-framework-runtime-methods.txt; IMP0x7ffc225123bb, next method0x7ffc2251280f. Static compatibility fingerprint, not physical camera validation."
+    },
+    {
+      "path": "Tests/Fixtures/Sequoia-24A335-doProbeControl.provenance.json",
+      "sha256": "45b8dc2e70a0edb82ee5885f907d01945ccd771ae79bb9a90216f97db3c74f35",
+      "provenance": "Extraction identity, source and explicit static-evidence limitations for the Sequoia24A335 method fixture."
+    }
+  ]
+}

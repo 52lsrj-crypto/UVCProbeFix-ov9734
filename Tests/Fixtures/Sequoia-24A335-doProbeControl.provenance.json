@@ -1,0 +1,16 @@
+{
+  "os": "macOS Sequoia 15.0",
+  "build": "24A335",
+  "architecture": "x86_64",
+  "class": "UVCUSBDeviceStreamingInterface",
+  "selector": "doProbeControl:frameRate:probeData:error:",
+  "runtime_imp": "0x7ffc225123bb",
+  "image": "/System/Library/PrivateFrameworks/UVCFamily.framework/Versions/A/UVCFamily",
+  "method_size": 1108,
+  "method_sha256": "3298c2f5911015cef6276d65e81e72df61382817a92c2c81b6d7fdde5433e76d",
+  "runtime_dump_sha256": "c7264a461c0f4843a8218b0510a58aa5c7b9755c2052b5f912171398643aaa9b",
+  "source": "UVCProbeFix-Tahoe-ExactBinary-20261103-143458-1576/runtime/UVC-framework-runtime-methods.txt",
+  "method_end_exclusive": "0x7ffc2251280f",
+  "page_offset": "0x3bb",
+  "evidence_limit": "Static captured method. Physical Sequoia camera validation is pending."
+}

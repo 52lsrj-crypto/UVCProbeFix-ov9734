@@ -1,0 +1,404 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 50;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		A10000000000000000000002 /* plugin_start.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A20000000000000000000002 /* plugin_start.cpp */; };
+		A10000000000000000000003 /* kern_start.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A20000000000000000000003 /* kern_start.cpp */; };
+		A1000000000000000000000C /* kern_start_generic.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A2000000000000000000000E /* kern_start_generic.cpp */; };
+		A10000000000000000000004 /* UVCLegacy0215.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A20000000000000000000006 /* UVCLegacy0215.cpp */; };
+		A10000000000000000000005 /* UVCRuntimeMode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A20000000000000000000007 /* UVCRuntimeMode.cpp */; };
+		A10000000000000000000006 /* UVCProbeControl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A20000000000000000000008 /* UVCProbeControl.cpp */; };
+		A10000000000000000000007 /* UVCDescriptorParser.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A20000000000000000000009 /* UVCDescriptorParser.cpp */; };
+		A10000000000000000000008 /* UVCProbeEngine.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A2000000000000000000000A /* UVCProbeEngine.cpp */; };
+		A10000000000000000000009 /* UVCRecoveryContext.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A2000000000000000000000B /* UVCRecoveryContext.cpp */; };
+		A1000000000000000000000A /* UVCTransportTahoe.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A2000000000000000000000C /* UVCTransportTahoe.cpp */; };
+		A1000000000000000000000B /* UVCQuirks.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A2000000000000000000000D /* UVCQuirks.cpp */; };
+	A1000000000000000000000D /* UVC15ProbeOverrun.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A2000000000000000000000F /* UVC15ProbeOverrun.cpp */; };
+		A1000000000000000000000E /* UVCSequoia.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A20000000000000000000010 /* UVCSequoia.cpp */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		A20000000000000000000002 /* plugin_start.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Lilu.kext/Contents/Resources/Library/plugin_start.cpp; sourceTree = "<group>"; };
+		A20000000000000000000003 /* kern_start.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = kern_start.cpp; sourceTree = "<group>"; };
+		A20000000000000000000004 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		A20000000000000000000005 /* UVCProbeFix.kext */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = UVCProbeFix.kext; sourceTree = BUILT_PRODUCTS_DIR; };
+		A20000000000000000000006 /* UVCLegacy0215.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = UVCLegacy0215.cpp; sourceTree = "<group>"; };
+		A20000000000000000000007 /* UVCRuntimeMode.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = UVCRuntimeMode.cpp; sourceTree = "<group>"; };
+		A20000000000000000000008 /* UVCProbeControl.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = UVCProbeControl.cpp; sourceTree = "<group>"; };
+		A20000000000000000000009 /* UVCDescriptorParser.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = UVCDescriptorParser.cpp; sourceTree = "<group>"; };
+		A2000000000000000000000A /* UVCProbeEngine.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = UVCProbeEngine.cpp; sourceTree = "<group>"; };
+		A2000000000000000000000B /* UVCRecoveryContext.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = UVCRecoveryContext.cpp; sourceTree = "<group>"; };
+		A2000000000000000000000C /* UVCTransportTahoe.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = UVCTransportTahoe.cpp; sourceTree = "<group>"; };
+		A2000000000000000000000D /* UVCQuirks.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = UVCQuirks.cpp; sourceTree = "<group>"; };
+		A2000000000000000000000E /* kern_start_generic.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = kern_start_generic.cpp; sourceTree = "<group>"; };
+	A2000000000000000000000F /* UVC15ProbeOverrun.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = UVC15ProbeOverrun.cpp; sourceTree = "<group>"; };
+		A20000000000000000000010 /* UVCSequoia.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = UVCSequoia.cpp; sourceTree = "<group>"; };
+		A20000000000000000000011 /* UVCSequoia.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = UVCSequoia.hpp; sourceTree = "<group>"; };
+		A20000000000000000000012 /* UVCSequoiaProbePatch.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = UVCSequoiaProbePatch.hpp; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		A30000000000000000000001 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		A40000000000000000000001 = {
+			isa = PBXGroup;
+			children = (
+				A40000000000000000000002 /* UVCProbeFix */,
+				A40000000000000000000003 /* Dependencies */,
+				A40000000000000000000004 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		A40000000000000000000002 /* UVCProbeFix */ = {
+			isa = PBXGroup;
+			children = (
+				A20000000000000000000004 /* Info.plist */,
+				A20000000000000000000003 /* kern_start.cpp */,
+				A2000000000000000000000E /* kern_start_generic.cpp */,
+				A20000000000000000000006 /* UVCLegacy0215.cpp */,
+				A20000000000000000000007 /* UVCRuntimeMode.cpp */,
+				A20000000000000000000008 /* UVCProbeControl.cpp */,
+				A20000000000000000000009 /* UVCDescriptorParser.cpp */,
+				A2000000000000000000000A /* UVCProbeEngine.cpp */,
+				A2000000000000000000000B /* UVCRecoveryContext.cpp */,
+				A2000000000000000000000C /* UVCTransportTahoe.cpp */,
+				A2000000000000000000000D /* UVCQuirks.cpp */,
+				A2000000000000000000000F /* UVC15ProbeOverrun.cpp */,
+				A20000000000000000000010 /* UVCSequoia.cpp */,
+				A20000000000000000000011 /* UVCSequoia.hpp */,
+				A20000000000000000000012 /* UVCSequoiaProbePatch.hpp */,
+			);
+			path = UVCProbeFix;
+			sourceTree = "<group>";
+		};
+		A40000000000000000000003 /* Dependencies */ = {
+			isa = PBXGroup;
+			children = (
+				A20000000000000000000002 /* plugin_start.cpp */,
+			);
+			name = Dependencies;
+			sourceTree = "<group>";
+		};
+		A40000000000000000000004 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				A20000000000000000000005 /* UVCProbeFix.kext */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXHeadersBuildPhase section */
+		A50000000000000000000001 /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXHeadersBuildPhase section */
+
+/* Begin PBXNativeTarget section */
+		A60000000000000000000001 /* UVCProbeFix */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = A90000000000000000000002 /* Build configuration list for PBXNativeTarget "UVCProbeFix" */;
+			buildPhases = (
+				A50000000000000000000001 /* Headers */,
+				A70000000000000000000001 /* Sources */,
+				A30000000000000000000001 /* Frameworks */,
+				A80000000000000000000001 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = UVCProbeFix;
+			productName = UVCProbeFix;
+			productReference = A20000000000000000000005 /* UVCProbeFix.kext */;
+			productType = "com.apple.product-type.kernel-extension";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		A60000000000000000000002 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 1600;
+				ORGANIZATIONNAME = DNMTechLabs;
+				TargetAttributes = {
+					A60000000000000000000001 = {
+						CreatedOnToolsVersion = 16.0;
+					};
+				};
+			};
+			buildConfigurationList = A90000000000000000000001 /* Build configuration list for PBXProject "UVCProbeFix" */;
+			compatibilityVersion = "Xcode 9.3";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = A40000000000000000000001;
+			productRefGroup = A40000000000000000000004 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				A60000000000000000000001 /* UVCProbeFix */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		A80000000000000000000001 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		A70000000000000000000001 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A10000000000000000000002 /* plugin_start.cpp in Sources */,
+				A10000000000000000000003 /* kern_start.cpp in Sources */,
+				A1000000000000000000000C /* kern_start_generic.cpp in Sources */,
+				A10000000000000000000004 /* UVCLegacy0215.cpp in Sources */,
+				A10000000000000000000005 /* UVCRuntimeMode.cpp in Sources */,
+				A10000000000000000000006 /* UVCProbeControl.cpp in Sources */,
+				A10000000000000000000007 /* UVCDescriptorParser.cpp in Sources */,
+				A10000000000000000000008 /* UVCProbeEngine.cpp in Sources */,
+				A10000000000000000000009 /* UVCRecoveryContext.cpp in Sources */,
+				A1000000000000000000000A /* UVCTransportTahoe.cpp in Sources */,
+				A1000000000000000000000B /* UVCQuirks.cpp in Sources */,
+				A1000000000000000000000D /* UVC15ProbeOverrun.cpp in Sources */,
+				A1000000000000000000000E /* UVCSequoia.cpp in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		AA0000000000000000000001 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = x86_64;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ANALYZER_DEADCODE_DEADSTORES = YES;
+				CLANG_ANALYZER_LOGIC = YES;
+				CLANG_ANALYZER_SECURITY_INSECUREAPI_STRCPY = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				CLANG_ENABLE_MODULES = YES;
+				CODE_SIGN_IDENTITY = "-";
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_SYMBOLS_PRIVATE_EXTERN = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				KERNEL_EXTENSION_HEADER_SEARCH_PATHS = "$(PROJECT_DIR)/MacKernelSDK/Headers";
+				KERNEL_FRAMEWORK_HEADERS = "$(PROJECT_DIR)/MacKernelSDK/Headers";
+				MACOSX_DEPLOYMENT_TARGET = 10.14;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = macosx;
+			};
+			name = Debug;
+		};
+		AA0000000000000000000002 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = x86_64;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ANALYZER_DEADCODE_DEADSTORES = YES;
+				CLANG_ANALYZER_LOGIC = YES;
+				CLANG_ANALYZER_SECURITY_INSECUREAPI_STRCPY = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				CLANG_ENABLE_MODULES = YES;
+				CODE_SIGN_IDENTITY = "-";
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_SYMBOLS_PRIVATE_EXTERN = YES;
+				KERNEL_EXTENSION_HEADER_SEARCH_PATHS = "$(PROJECT_DIR)/MacKernelSDK/Headers";
+				KERNEL_FRAMEWORK_HEADERS = "$(PROJECT_DIR)/MacKernelSDK/Headers";
+				MACOSX_DEPLOYMENT_TARGET = 10.14;
+				SDKROOT = macosx;
+			};
+			name = Release;
+		};
+		AA0000000000000000000003 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				EXCLUDED_SOURCE_FILE_NAMES = (
+					kern_start.cpp,
+				);
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CODE_SIGN_STYLE = Manual;
+				CLANG_CXX_LIBRARY = "compiler-default";
+				CURRENT_PROJECT_VERSION = 302;
+				DEPLOYMENT_POSTPROCESSING = YES;
+				GCC_ENABLE_CPP_EXCEPTIONS = NO;
+				GCC_ENABLE_CPP_RTTI = NO;
+				GCC_ENABLE_FLOATING_POINT_LIBRARY_CALLS = NO;
+				GCC_ENABLE_KERNEL_DEVELOPMENT = NO;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
+					"MODULE_VERSION=$(MODULE_VERSION)",
+					"PRODUCT_NAME=$(PRODUCT_NAME)",
+					"UVCP_KERNEL_BUILD=1",
+				);
+				HEADER_SEARCH_PATHS = "${PROJECT_DIR}/Lilu.kext/Contents/Resources";
+				INFOPLIST_FILE = "$(SRCROOT)/UVCProbeFix/Info.plist";
+				LIBRARY_SEARCH_PATHS = "$(PROJECT_DIR)/MacKernelSDK/Library/x86_64";
+				MARKETING_VERSION = 0.3.2;
+				MODULE_NAME = com.dnmtechlabs.UVCProbeFix;
+				MODULE_START = "$(PRODUCT_NAME)_kern_start";
+				MODULE_STOP = "$(PRODUCT_NAME)_kern_stop";
+				MODULE_VERSION = 0.3.2;
+				OTHER_CFLAGS = (
+					"-fno-non-call-exceptions",
+					"-fno-builtin",
+					"-fno-asynchronous-unwind-tables",
+				);
+				OTHER_LDFLAGS = "-static";
+				PRODUCT_BUNDLE_IDENTIFIER = com.dnmtechlabs.UVCProbeFix;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				WRAPPER_EXTENSION = kext;
+			};
+			name = Debug;
+		};
+		AA0000000000000000000004 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				EXCLUDED_SOURCE_FILE_NAMES = (
+					kern_start_generic.cpp,
+					UVCLegacy0215.cpp,
+					UVCRuntimeMode.cpp,
+					UVCProbeControl.cpp,
+					UVCDescriptorParser.cpp,
+					UVCProbeEngine.cpp,
+					UVCRecoveryContext.cpp,
+					UVCTransportTahoe.cpp,
+					UVCQuirks.cpp,
+				);
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				DEAD_CODE_STRIPPING = YES;
+				GCC_OPTIMIZATION_LEVEL = s;
+				CODE_SIGN_STYLE = Manual;
+				CLANG_CXX_LIBRARY = "compiler-default";
+				CURRENT_PROJECT_VERSION = 302;
+				DEPLOYMENT_POSTPROCESSING = YES;
+				GCC_ENABLE_CPP_EXCEPTIONS = NO;
+				GCC_ENABLE_CPP_RTTI = NO;
+				GCC_ENABLE_FLOATING_POINT_LIBRARY_CALLS = NO;
+				GCC_ENABLE_KERNEL_DEVELOPMENT = NO;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
+					"MODULE_VERSION=$(MODULE_VERSION)",
+					"PRODUCT_NAME=$(PRODUCT_NAME)",
+					"UVCP_KERNEL_BUILD=1",
+				);
+				HEADER_SEARCH_PATHS = "${PROJECT_DIR}/Lilu.kext/Contents/Resources";
+				INFOPLIST_FILE = "$(SRCROOT)/UVCProbeFix/Info.plist";
+				LIBRARY_SEARCH_PATHS = "$(PROJECT_DIR)/MacKernelSDK/Library/x86_64";
+				MARKETING_VERSION = 0.3.2;
+				MODULE_NAME = com.dnmtechlabs.UVCProbeFix;
+				MODULE_START = "$(PRODUCT_NAME)_kern_start";
+				MODULE_STOP = "$(PRODUCT_NAME)_kern_stop";
+				MODULE_VERSION = 0.3.2;
+				OTHER_CFLAGS = (
+					"-fno-non-call-exceptions",
+					"-fno-builtin",
+					"-fno-asynchronous-unwind-tables",
+				);
+				OTHER_LDFLAGS = "-static";
+				PRODUCT_BUNDLE_IDENTIFIER = com.dnmtechlabs.UVCProbeFix;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				STRIP_STYLE = "non-global";
+				WRAPPER_EXTENSION = kext;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		A90000000000000000000001 /* Build configuration list for PBXProject "UVCProbeFix" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				AA0000000000000000000001 /* Debug */,
+				AA0000000000000000000002 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		A90000000000000000000002 /* Build configuration list for PBXNativeTarget "UVCProbeFix" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				AA0000000000000000000003 /* Debug */,
+				AA0000000000000000000004 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = A60000000000000000000002 /* Project object */;
+}

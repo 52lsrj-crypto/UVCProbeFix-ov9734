@@ -1,0 +1,12 @@
+/.deps/
+/.test-build/
+/build/
+/dist/
+/Lilu.kext
+/MacKernelSDK
+.DS_Store
+__pycache__/
+*.py[cod]
+*.dSYM/
+xcuserdata/
+*.xcuserstate

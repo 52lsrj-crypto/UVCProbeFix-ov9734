@@ -1,0 +1,16 @@
+{
+  "source": "UVCProbeFix-Generic-PassiveTrace-20261004-214856-5704",
+  "physical_result": "working_image",
+  "camera": "Sonix 322E:2103",
+  "macos_build": "25G241",
+  "probe_return_hex": "0100010115160500000000000000000000004d221c00000c0000",
+  "commit_hex": "0100010115160500000000000000000000004d221c00000c0000",
+  "sha256": "de4731b57a3908e067c5361e592e500d701956770eba14a31bfa5cf888aa407c",
+  "expected": {
+    "format_index": 1,
+    "frame_index": 1,
+    "frame_interval_100ns": 333333,
+    "max_video_frame_size": 1843789,
+    "max_payload_transfer_size": 3072
+  }
+}
