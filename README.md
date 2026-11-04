@@ -40,6 +40,10 @@ The builder verifies pinned dependencies, runs tests and static analysis, and cr
 
 [GitHub Actions](https://github.com/danielnmaldonado/UVCProbeFix/actions) builds and validates each change. Successful builds on `main` automatically publish versioned release packages. Automated checks do not replace physical camera testing.
 
+## Support development
+
+Support this project through [Ko-fi](https://ko-fi.com/olarila), [PayPal](https://www.paypal.com/donate/?hosted_button_id=AA4QBFJQYW2N2), [Revolut](https://revolut.me/olarila), [Remitly](https://remit.ly/pay/danielm2937), or [Mercado Pago](https://mpago.la/2wFPzHP).
+
 ## License
 
 [BSD 3-Clause](LICENSE). Copyright © 2026 DNMTechLabs.
