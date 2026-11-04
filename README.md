@@ -38,7 +38,7 @@ On an Intel Mac with full Xcode selected:
 
 The builder verifies pinned dependencies, runs tests and static analysis, and creates an ad-hoc signed Release ZIP in `dist/`. It does not install the kext.
 
-[GitHub Actions](https://github.com/danielnmaldonado/UVCProbeFix/actions) builds and validates each change. Version tags publish release packages. Automated checks do not replace physical camera testing.
+[GitHub Actions](https://github.com/danielnmaldonado/UVCProbeFix/actions) builds and validates each change. Successful builds on `main` automatically publish versioned release packages. Automated checks do not replace physical camera testing.
 
 ## License
 

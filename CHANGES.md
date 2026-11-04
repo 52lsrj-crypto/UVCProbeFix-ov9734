@@ -2,6 +2,8 @@
 
 ## 0.3.3 (303)
 
+- Publish versioned GitHub Releases automatically after successful builds on `main`.
+
 - Accept all Darwin `24.x` kernels for Sequoia and all Darwin `25.x` kernels for the Tahoe S145 recovery.
 - Remove the Sequoia minor `0` and Tahoe minor `6` admission restrictions without changing patch bytes or fingerprint checks.
 - Set the OpenCore kernel range to `24.0.0`–`25.99.99`.
