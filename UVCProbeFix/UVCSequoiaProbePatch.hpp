@@ -141,8 +141,8 @@ static_assert(sizeof(kReplacement) == kPatchSize, "Sequoia patch size changed");
 static_assert(kPostGetOffset + kPatchSize <= kResumeOffset, "Sequoia patch overlaps continuation");
 static_assert(0x3BB + kMethodSize <= 4096, "Captured Sequoia method must fit its cache page");
 
-static inline bool isSupportedDarwinVersion(uint32_t major, uint32_t minor) {
-    return major == 24 && minor == 0;
+static inline bool isSupportedDarwinVersion(uint32_t major, uint32_t /*minor*/) {
+    return major == 24;
 }
 
 // Match the entire captured method, including its prologue, local-stack ABI,

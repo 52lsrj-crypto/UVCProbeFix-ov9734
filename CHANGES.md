@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.3.3 (303)
+
+- Accept all Darwin `24.x` kernels for Sequoia and all Darwin `25.x` kernels for the Tahoe S145 recovery.
+- Remove the Sequoia minor `0` and Tahoe minor `6` admission restrictions without changing patch bytes or fingerprint checks.
+- Set the OpenCore kernel range to `24.0.0`–`25.99.99`.
+- Identify the Lenovo S145 (Ice Lake) as the development target; other laptop models may require adaptation.
+
 ## 0.3.2 (302)
 
 - Adapt the existing Tahoe Frame 4 to Frame 1, single-retry PROBE recovery to Sequoia 15.0 build `24A335`.

@@ -5,7 +5,7 @@
 	<key>CFBundleDevelopmentRegion</key>
 	<string>en</string>
 	<key>CFBundleGetInfoString</key>
-	<string>UVCProbeFix 0.3.2 (302)</string>
+	<string>UVCProbeFix 0.3.3 (303)</string>
 	<key>CFBundleExecutable</key>
 	<string>UVCProbeFix</string>
 	<key>CFBundleIdentifier</key>
@@ -17,11 +17,11 @@
 	<key>CFBundlePackageType</key>
 	<string>KEXT</string>
 	<key>CFBundleShortVersionString</key>
-	<string>0.3.2</string>
+	<string>0.3.3</string>
 	<key>CFBundleSignature</key>
 	<string>????</string>
 	<key>CFBundleVersion</key>
-	<string>302</string>
+	<string>303</string>
 	<key>IOKitPersonalities</key>
 	<dict>
 		<key>UVCProbeFix</key>

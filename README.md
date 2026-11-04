@@ -6,22 +6,24 @@
 
 A Lilu plugin that repairs malformed UVC negotiation responses which prevent supported laptop cameras from starting video. Includes the Sonix `174F:1176` recovery and the existing targeted HP/Chicony `04F2:B6BF` workaround.
 
+Developed for the **Lenovo S145 (Ice Lake)**. Other laptop models may require adaptation.
+
 ## Compatibility
 
-Intel/x86_64 only. Sonix recovery requires an exact supported binary fingerprint.
+Intel/x86_64 only.
 
-| macOS | Target | Status |
-| --- | --- | --- |
-| Sequoia 15.0 | `24A335` / Darwin `24.0` | Adapted from the Tahoe fix; physical camera testing pending |
-| Tahoe | `25G83`, `25G229`, `25G241` / Darwin `25.6` | Existing working Sonix recovery preserved |
+| macOS | Kernel target |
+| --- | --- |
+| Sequoia | Any Darwin `24.x` kernel |
+| Tahoe | Any Darwin `25.x` kernel |
 
-The HP workaround remains limited to Tahoe/Darwin `25.6`. Other builds and cameras are not assumed compatible.
+The S145 recovery has no minor-kernel restriction. It still verifies the UVC driver bytes before applying the patch. Physical camera testing of the Sequoia adaptation is pending. The separate HP workaround retains its existing ABI checks.
 
 ## Install
 
 1. Install [Lilu](https://github.com/acidanthera/Lilu) `1.7.2` or newer.
 2. Copy `UVCProbeFix.kext` to `EFI/OC/Kexts` and add it after Lilu in OpenCore `Kernel -> Add`.
-3. Use `Arch=x86_64`, `MinKernel=24.0.0`, `MaxKernel=25.6.0`, and `Enabled=true`. An example entry is included in [OpenCore-Kernel-Add-entry.plist](OpenCore-Kernel-Add-entry.plist).
+3. Use `Arch=x86_64`, `MinKernel=24.0.0`, `MaxKernel=25.99.99`, and `Enabled=true`. An example entry is included in [OpenCore-Kernel-Add-entry.plist](OpenCore-Kernel-Add-entry.plist).
 4. Reboot and test the camera. Run `Tools/PostBoot-UVCProbeFix-Verify.command` to inspect loading and patch logs.
 
 Keep a backup of the previous kext. The boot argument `-uvcpoff` disables the plugin.

@@ -7,13 +7,13 @@
 	<key>BundlePath</key>
 	<string>UVCProbeFix.kext</string>
 	<key>Comment</key>
-	<string>UVCProbeFix 0.3.2 - Exact Sequoia 24.0 and Tahoe 25.6 recovery - x86_64</string>
+	<string>UVCProbeFix 0.3.3 - Sequoia 24.x and Tahoe 25.x recovery - x86_64</string>
 	<key>Enabled</key>
 	<true/>
 	<key>ExecutablePath</key>
 	<string>Contents/MacOS/UVCProbeFix</string>
 	<key>MaxKernel</key>
-	<string>25.6.0</string>
+	<string>25.99.99</string>
 	<key>MinKernel</key>
 	<string>24.0.0</string>
 	<key>PlistPath</key>

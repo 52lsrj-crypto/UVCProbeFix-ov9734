@@ -2,7 +2,7 @@
 set -euo pipefail
 IFS=$'\n\t'
 ROOT="$(cd "$(dirname "$0")/.." && pwd -P)"
-VERSION="0.3.2"
+VERSION="0.3.3"
 PYTHON="$(command -v python3 || true)"
 [ -n "$PYTHON" ] || { echo 'ERROR: python3 is required for source validation' >&2; exit 1; }
 
@@ -14,8 +14,8 @@ import re
 import sys
 
 root=pathlib.Path(sys.argv[1])
-version='0.3.2'
-build_number='302'
+version='0.3.3'
+build_number='303'
 
 with (root/'UVCProbeFix'/'Info.plist').open('rb') as f:
     p=plistlib.load(f)
@@ -23,7 +23,7 @@ assert p['CFBundleIdentifier']=='com.dnmtechlabs.UVCProbeFix'
 assert p['CFBundleExecutable']=='UVCProbeFix'
 assert p['CFBundleShortVersionString']==version
 assert p['CFBundleVersion']==build_number
-assert p['CFBundleGetInfoString']=='UVCProbeFix 0.3.2 (302)'
+assert p['CFBundleGetInfoString']=='UVCProbeFix 0.3.3 (303)'
 assert p['NSHumanReadableCopyright']=='Copyright © 2026 DNMTechLabs. All rights reserved. dnmtechlabs@gmail.com'
 assert p['OSBundleLibraries']['as.vit9696.Lilu']=='1.7.2'
 
@@ -42,7 +42,7 @@ for name,iface,sub in (('UVCProbeFix-174F1176-Control',0,1),('UVCProbeFix-174F11
 with (root/'OpenCore-Kernel-Add-entry.plist').open('rb') as f:
     oc=plistlib.load(f)
 assert oc['Arch']=='x86_64' and oc['BundlePath']=='UVCProbeFix.kext'
-assert oc['MinKernel']=='24.0.0' and oc['MaxKernel']=='25.6.0' and oc['Enabled'] is True
+assert oc['MinKernel']=='24.0.0' and oc['MaxKernel']=='25.99.99' and oc['Enabled'] is True
 assert version in oc['Comment']
 
 expected_runtime={
@@ -73,9 +73,9 @@ legacy_patch=(root/'UVCProbeFix'/'UVCProbePatch.hpp').read_bytes()
 assert hashlib.sha256(legacy_patch).hexdigest()=='35dbb728de7e20ab0068f86bb304ad84776dcf7c70a31a347a93e20622ef44e8'
 
 pbx=(root/'UVCProbeFix.xcodeproj'/'project.pbxproj').read_text()
-assert pbx.count('MODULE_VERSION = 0.3.2;')==2
-assert pbx.count('CURRENT_PROJECT_VERSION = 302;')==2
-assert pbx.count('MARKETING_VERSION = 0.3.2;')==2
+assert pbx.count('MODULE_VERSION = 0.3.3;')==2
+assert pbx.count('CURRENT_PROJECT_VERSION = 303;')==2
+assert pbx.count('MARKETING_VERSION = 0.3.3;')==2
 for source in ('kern_start.cpp','kern_start_generic.cpp','UVCLegacy0215.cpp','UVCRuntimeMode.cpp','UVCProbeControl.cpp',
                'UVCDescriptorParser.cpp','UVCProbeEngine.cpp','UVCRecoveryContext.cpp',
                'UVCTransportTahoe.cpp','UVCQuirks.cpp','UVC15ProbeOverrun.cpp','UVCSequoia.cpp'):
@@ -175,7 +175,7 @@ assert 'Sequoia exact shared-cache path: skipping Tahoe generic IOUSBHost ABI ga
 assert 'case "$(/usr/bin/uname -r)" in' in build and '24.*)' in build
 assert 'Release exact shared-cache build: skipping generic IOUSBHost ABI gate' in build
 assert (root/'Tools'/'PostBoot-UVCProbeFix-Verify.command').is_file()
-assert 'BUILD_NUMBER="302"' in build
+assert 'BUILD_NUMBER="303"' in build
 assert '/usr/bin/codesign' in build
 assert '--sign -' in build
 assert 'codesign --verify' in build
@@ -196,7 +196,7 @@ for path in list((root/'UVCProbeFix').glob('*'))+list((root/'Tests').glob('*.cpp
         assert b'\x00' not in data,path
         assert b'\r\n' not in data,path
 
-print('UVCProbeFix 0.3.2 Sequoia/Tahoe source invariants: PASS')
+print('UVCProbeFix 0.3.3 Sequoia/Tahoe source invariants: PASS')
 PY
 
 while IFS= read -r -d '' script; do

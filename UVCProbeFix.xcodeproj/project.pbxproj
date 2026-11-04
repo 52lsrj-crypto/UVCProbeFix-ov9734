@@ -293,7 +293,7 @@
 				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
 				CODE_SIGN_STYLE = Manual;
 				CLANG_CXX_LIBRARY = "compiler-default";
-				CURRENT_PROJECT_VERSION = 302;
+				CURRENT_PROJECT_VERSION = 303;
 				DEPLOYMENT_POSTPROCESSING = YES;
 				GCC_ENABLE_CPP_EXCEPTIONS = NO;
 				GCC_ENABLE_CPP_RTTI = NO;
@@ -308,11 +308,11 @@
 				HEADER_SEARCH_PATHS = "${PROJECT_DIR}/Lilu.kext/Contents/Resources";
 				INFOPLIST_FILE = "$(SRCROOT)/UVCProbeFix/Info.plist";
 				LIBRARY_SEARCH_PATHS = "$(PROJECT_DIR)/MacKernelSDK/Library/x86_64";
-				MARKETING_VERSION = 0.3.2;
+				MARKETING_VERSION = 0.3.3;
 				MODULE_NAME = com.dnmtechlabs.UVCProbeFix;
 				MODULE_START = "$(PRODUCT_NAME)_kern_start";
 				MODULE_STOP = "$(PRODUCT_NAME)_kern_stop";
-				MODULE_VERSION = 0.3.2;
+				MODULE_VERSION = 0.3.3;
 				OTHER_CFLAGS = (
 					"-fno-non-call-exceptions",
 					"-fno-builtin",
@@ -344,7 +344,7 @@
 				GCC_OPTIMIZATION_LEVEL = s;
 				CODE_SIGN_STYLE = Manual;
 				CLANG_CXX_LIBRARY = "compiler-default";
-				CURRENT_PROJECT_VERSION = 302;
+				CURRENT_PROJECT_VERSION = 303;
 				DEPLOYMENT_POSTPROCESSING = YES;
 				GCC_ENABLE_CPP_EXCEPTIONS = NO;
 				GCC_ENABLE_CPP_RTTI = NO;
@@ -359,11 +359,11 @@
 				HEADER_SEARCH_PATHS = "${PROJECT_DIR}/Lilu.kext/Contents/Resources";
 				INFOPLIST_FILE = "$(SRCROOT)/UVCProbeFix/Info.plist";
 				LIBRARY_SEARCH_PATHS = "$(PROJECT_DIR)/MacKernelSDK/Library/x86_64";
-				MARKETING_VERSION = 0.3.2;
+				MARKETING_VERSION = 0.3.3;
 				MODULE_NAME = com.dnmtechlabs.UVCProbeFix;
 				MODULE_START = "$(PRODUCT_NAME)_kern_start";
 				MODULE_STOP = "$(PRODUCT_NAME)_kern_stop";
-				MODULE_VERSION = 0.3.2;
+				MODULE_VERSION = 0.3.3;
 				OTHER_CFLAGS = (
 					"-fno-non-call-exceptions",
 					"-fno-builtin",

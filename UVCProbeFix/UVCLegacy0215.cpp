@@ -322,14 +322,13 @@ static void patchedCsValidatePage(vnode_t vnode,
 }
 
 static void patcherLoaded(void *, KernelPatcher &patcher) {
-    // OpenCore independently restricts this kext to Darwin 25.6.0. Keep a
-    // runtime guard as well; exact page bytes provide the stronger build-family gate.
-    if (getKernelVersion() != KernelVersion::Tahoe ||
-        getKernelMinorVersion() != UVCProbePatch::kDarwinMinor) {
+    // OpenCore admits Darwin 24.x/25.x; this path handles every Tahoe minor.
+    // Exact page bytes remain the stronger build-family gate.
+    if (getKernelVersion() != KernelVersion::Tahoe) {
         storePatchState(PatchFailed);
         SYSLOG(
             MODULE_SHORT,
-            "unsupported Darwin version for known Tahoe 25.6 UVCFamily fingerprints; plugin is inactive"
+            "unsupported Darwin major version for known Tahoe UVCFamily fingerprints; plugin is inactive"
         );
         return;
     }

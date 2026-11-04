@@ -67,9 +67,14 @@ void testReplacementPreservesAllOtherBytes() {
         if (i < 0x302 || i >= 0x345) assert(patched[i] == fixture[i]);
     }
     assert(isSupportedDarwinVersion(24, 0));
-    assert(!isSupportedDarwinVersion(24, 1));
+    assert(isSupportedDarwinVersion(24, 1));
+    assert(isSupportedDarwinVersion(24, 6));
+    assert(isSupportedDarwinVersion(24, 7));
+    assert(isSupportedDarwinVersion(24, UINT32_MAX));
     assert(!isSupportedDarwinVersion(23, 0));
     assert(!isSupportedDarwinVersion(25, 0));
+    assert(!isSupportedDarwinVersion(23, UINT32_MAX));
+    assert(!isSupportedDarwinVersion(25, UINT32_MAX));
 }
 
 #if defined(__x86_64__)

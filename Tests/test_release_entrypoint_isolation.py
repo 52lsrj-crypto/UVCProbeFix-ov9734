@@ -24,6 +24,22 @@ restored = re.sub(r'    // SEQUOIA_INTEGRATION_BEGIN[^\n]*\n.*?    // SEQUOIA_IN
 supported_range = '    KernelVersion::Sequoia,\n    KernelVersion::Tahoe,\n'
 assert restored.count(supported_range) == 1
 restored = restored.replace(supported_range, '    KernelVersion::Tahoe,\n    KernelVersion::Tahoe,\n', 1)
+major_only_gate = '    if (getKernelVersion() != KernelVersion::Tahoe) {\n'
+original_gate = ('    if (getKernelVersion() != KernelVersion::Tahoe ||\n'
+                 '        getKernelMinorVersion() != UVCProbePatch::kDarwinMinor) {\n')
+assert restored.count(major_only_gate) == 1
+assert 'getKernelMinorVersion() != UVCProbePatch::kDarwinMinor' not in restored
+restored = restored.replace(major_only_gate, original_gate, 1)
+major_gate_comment = ('    // OpenCore admits Darwin 24.x/25.x; this path handles every Tahoe minor.\n'
+                      '    // Exact page bytes remain the stronger build-family gate.\n')
+original_gate_comment = ('    // OpenCore independently restricts this kext to Darwin 25.6.0. Keep a\n'
+                         '    // runtime guard as well; exact page bytes provide the stronger build-family gate.\n')
+assert restored.count(major_gate_comment) == 1
+restored = restored.replace(major_gate_comment, original_gate_comment, 1)
+major_gate_message = 'unsupported Darwin major version for known Tahoe UVCFamily fingerprints; plugin is inactive'
+original_gate_message = 'unsupported Darwin version for known Tahoe 25.6 UVCFamily fingerprints; plugin is inactive'
+assert restored.count(major_gate_message) == 1
+restored = restored.replace(major_gate_message, original_gate_message, 1)
 actual = hashlib.sha256(restored.encode()).hexdigest()
 assert actual == KNOWN_0215_KERN_START_SHA256, (actual, KNOWN_0215_KERN_START_SHA256)
 assert 'UVC15::start()' in integrated
@@ -35,6 +51,10 @@ assert 'UVC::startTahoeTransport(mode)' in generic
 assert 'UVCLegacy0215::start()' in generic
 assert 'UVCSequoia::start()' in generic
 assert supported_range in generic
+legacy = (root / 'UVCProbeFix' / 'UVCLegacy0215.cpp').read_text()
+assert legacy.count(major_only_gate) == 1
+assert 'getKernelMinorVersion() != UVCProbePatch::kDarwinMinor' not in legacy
+assert major_gate_comment in legacy and major_gate_message in legacy
 
 pbx = pbx_path.read_text()
 # Every PBXBuildFile fileRef used by a source must have a PBXFileReference declaration.

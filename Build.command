@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# UVCProbeFix 0.3.2 builder / auditor
+# UVCProbeFix 0.3.3 builder / auditor
 # Copyright © 2026 DNMTechLabs. All rights reserved.
 # Contact: dnmtechlabs@gmail.com
 #
@@ -18,8 +18,8 @@ BUILD="${ROOT}/build"
 DIST="${ROOT}/dist"
 TEST_BUILD="${ROOT}/.test-build"
 LOG="${BUILD}/Build-UVCProbeFix.log"
-VERSION="0.3.2"
-BUILD_NUMBER="302"
+VERSION="0.3.3"
+BUILD_NUMBER="303"
 CONFIGURATION="${UVCP_CONFIGURATION:-Release}"
 case "$CONFIGURATION" in Release|Debug) ;; *) fail_config=1 ;; esac
 [ "${fail_config:-0}" -eq 0 ] || { echo "ERROR: UVCP_CONFIGURATION must be Release or Debug" >&2; exit 1; }
@@ -214,7 +214,7 @@ printf '>>> Running bounded libFuzzer smoke\n'
 # ---------------------------------------------------------------------------
 # 4. Source / plist / project regression validation
 # ---------------------------------------------------------------------------
-printf '>>> Running 0.3.2 source validator\n'
+printf '>>> Running 0.3.3 source validator\n'
 "${ROOT}/Tests/validate_source.sh" || fail "source validation failed"
 "$PYTHON" "${ROOT}/Tests/validate_release_zip.py" --self-test || fail "ZIP validator self-test failed"
 /usr/bin/plutil -lint "${ROOT}/UVCProbeFix/Info.plist" >/dev/null || fail "source Info.plist is invalid"
