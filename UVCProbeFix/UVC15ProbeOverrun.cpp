@@ -170,13 +170,10 @@ bool start() {
     // before this plugin runs. Plain onKextLoad() only fires for kexts loaded
     // AFTER registration, so the callback never ran on real hardware and no
     // hook was ever installed. onKextLoadForce() replays it for live kexts.
-    const auto error = lilu.onKextLoadForce(&hostInfo, 1, loaded, nullptr);
-    if (error != LiluAPI::Error::NoError) {
-        SYSLOG(MODULE_SHORT, "UVC1.5 failed to register IOUSBHostFamily (%d)",
-               static_cast<int>(error));
-        return false;
-    }
-    SYSLOG(MODULE_SHORT, "UVC1.5 registered force-load watcher for IOUSBHostFamily");
+    // onKextLoadForce() returns void: it replays the handler for kexts that
+    // are already resident. Register first, then confirm our handler ran.
+    lilu.onKextLoadForce(&hostInfo, 1, loaded, nullptr);
+    SYSLOG(MODULE_SHORT, "UVC1.5 force-load watcher registered for IOUSBHostFamily");
     return true;
 }
 }
