@@ -160,18 +160,23 @@ static IOReturn requestHook(IOUSBHostDevice *device, IOService *client,
     if (descriptor != nullptr && completion == nullptr) {
         IOBufferMemoryDescriptor *buf = nullptr;
         buf = IOBufferMemoryDescriptor::inTaskWithOptions(kernel_task, 0, kMaxProbe, 1);
+        if (buf == nullptr) uvcpMark("uvcpBufNull", 1);
         if (buf != nullptr) {
-            buf->prepare(kIODirectionIn);
+            const IOReturn pr = buf->prepare(kIODirectionIn);
+            uvcpMark("uvcpDescPrep", static_cast<long long>(pr));
             StandardUSB::DeviceRequest enlarged = request;
             enlarged.wLength = kMaxProbe;
             uint32_t actual = 0;
             const IOReturn r = originalRequest(device, client, enlarged, nullptr,
                                                buf, actual, nullptr, timeout);
             buf->complete(kIODirectionIn);
+            uvcpMark("uvcpDescR", static_cast<long long>(r));
+            uvcpMark("uvcpDescActual", static_cast<long long>(actual));
             uint32_t copied = 0;
             if (r == kIOReturnSuccess && actual > 0) {
                 copied = actual < request.wLength ? actual : request.wLength;
                 const IOReturn w = descriptor->writeBytes(0, buf->getBytesNoCopy(), copied);
+                uvcpMark("uvcpDescW", static_cast<long long>(w));
                 if (w == kIOReturnSuccess) {
                     buf->release();
                     transformedHits++;
