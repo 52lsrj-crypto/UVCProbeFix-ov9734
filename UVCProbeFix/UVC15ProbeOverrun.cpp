@@ -35,6 +35,7 @@ static void uvcpMark(const char *key, long long value) {
 }
 
 static bool routeInstalled {false};
+static int totalCalls {0};
 static int transformedHits {0};
 static int failedHits {0};
 static uint32_t logBudget {4};
@@ -96,6 +97,7 @@ static IOReturn requestHook(IOUSBHostDevice *device, IOService *client,
                             uint32_t &transferred, IOUSBHostCompletion *completion,
                             uint32_t timeout) {
     if (originalRequest == nullptr) return kIOReturnUnsupported;
+    totalCalls++;
     // Cheap rejection first: never touch descriptors or allocate for other USB IO.
     if (device == nullptr || request.bmRequestType != 0xA1 ||
         request.bRequest != 0x81 ||
@@ -150,8 +152,13 @@ static IOReturn requestHook(IOUSBHostDevice *device, IOService *client,
         uint32_t actual = 0;
         const IOReturn r = originalRequest(device, client, enlarged, expanded,
                                            nullptr, actual, nullptr, timeout);
+        uvcpMark("uvcpAll", static_cast<long long>(totalCalls));
+        uvcpMark("uvcpWValue", static_cast<long long>(request.wValue));
+        uvcpMark("uvcpWL", static_cast<long long>(request.wLength));
         uvcpMark("uvcpDescR", static_cast<long long>(r));
         uvcpMark("uvcpDescActual", static_cast<long long>(actual));
+        uvcpMark("uvcpFirst4", static_cast<long long>(
+            *reinterpret_cast<const uint32_t *>(expanded)));
         uint32_t copied = 0;
         bool wrote = false;
         if (r == kIOReturnSuccess && safeTransfer(actual, kMaxProbe)) {
