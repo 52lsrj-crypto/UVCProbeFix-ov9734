@@ -93,6 +93,19 @@ static IOReturn requestHook(IOUSBHostDevice *device, IOService *client,
                             uint32_t &transferred, IOUSBHostCompletion *completion,
                             uint32_t timeout) {
     if (originalRequest == nullptr) return kIOReturnUnsupported;
+    // Diagnostics: record the shape of every call so we can see whether the
+    // UVC assistant's requests even reach this hook.
+    static int callSeq = 0;
+    callSeq++;
+    if (callSeq <= 64) {
+        uvcpMark("uvcpCalls", callSeq);
+        uvcpMark("uvcpType", static_cast<long long>(request.bmRequestType));
+        uvcpMark("uvcpReq", static_cast<long long>(request.bRequest));
+        uvcpMark("uvcpLen", static_cast<long long>(request.wLength));
+        uvcpMark("uvcpShape", static_cast<long long>(
+            (descriptor != nullptr ? 1 : 0) | (completion != nullptr ? 2 : 0) |
+            (raw != nullptr ? 4 : 0)));
+    }
     // Cheap rejection first: never touch descriptors or allocate for other USB IO.
     if (device == nullptr || request.bmRequestType != 0xA1 ||
         request.bRequest != 0x81 ||
