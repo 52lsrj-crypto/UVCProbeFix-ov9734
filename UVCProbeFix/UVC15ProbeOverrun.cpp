@@ -158,39 +158,43 @@ static IOReturn requestHook(IOUSBHostDevice *device, IOService *client,
     // rather than a raw buffer. Enlarge into our own DMA buffer, then copy the
     // device's reply back into the caller's descriptor.
     if (descriptor != nullptr && completion == nullptr) {
-        IOBufferMemoryDescriptor *buf = nullptr;
-        buf = IOBufferMemoryDescriptor::inTaskWithOptions(kernel_task, 0, kMaxProbe, 1);
-        if (buf == nullptr) uvcpMark("uvcpBufNull", 1);
-        if (buf != nullptr) {
-            const IOReturn pr = buf->prepare(kIODirectionIn);
-            uvcpMark("uvcpDescPrep", static_cast<long long>(pr));
-            StandardUSB::DeviceRequest enlarged = request;
-            enlarged.wLength = kMaxProbe;
-            uint32_t actual = 0;
-            const IOReturn r = originalRequest(device, client, enlarged, nullptr,
-                                               buf, actual, nullptr, timeout);
-            buf->complete(kIODirectionIn);
-            uvcpMark("uvcpDescR", static_cast<long long>(r));
-            uvcpMark("uvcpDescActual", static_cast<long long>(actual));
-            uint32_t copied = 0;
-            if (r == kIOReturnSuccess && actual > 0) {
-                copied = actual < request.wLength ? actual : request.wLength;
-                const IOReturn w = descriptor->writeBytes(0, buf->getBytesNoCopy(), copied);
-                uvcpMark("uvcpDescW", static_cast<long long>(w));
-                if (w == kIOReturnSuccess) {
-                    buf->release();
-                    transformedHits++;
-                    uvcpMark("uvcpHitDesc", transformedHits);
-                    return kIOReturnSuccess;
-                }
-            }
-            buf->release();
-            failedHits++;
-            uvcpMark("uvcpFailDesc", failedHits);
-            return r;
+        // Issue the enlarged request with a plain pointer: Apple's
+        // internalDeviceRequest rejects an altered descriptor request with
+        // kIOReturnBadArgument. Copy the reply back into the caller's
+        // descriptor afterwards.
+        void *expanded = IOMalloc(kMaxProbe);
+        if (expanded == nullptr) {
+            uvcpMark("uvcpBufNull", 1);
+            return passThrough(device, client, request, raw, descriptor,
+                               transferred, completion, timeout);
         }
-        return passThrough(device, client, request, raw, descriptor,
-                           transferred, completion, timeout);
+        bzero(expanded, kMaxProbe);
+        StandardUSB::DeviceRequest enlarged = request;
+        enlarged.wLength = kMaxProbe;
+        uint32_t actual = 0;
+        const IOReturn r = originalRequest(device, client, enlarged, expanded,
+                                           nullptr, actual, nullptr, timeout);
+        uvcpMark("uvcpDescR", static_cast<long long>(r));
+        uvcpMark("uvcpDescActual", static_cast<long long>(actual));
+        uint32_t copied = 0;
+        if (r == kIOReturnSuccess && actual > 0 && safeTransfer(actual, kMaxProbe)) {
+            copied = actual < request.wLength ? actual : request.wLength;
+            const IOReturn w = descriptor->writeBytes(0, expanded, copied);
+            uvcpMark("uvcpDescW", static_cast<long long>(w));
+            if (w == kIOReturnSuccess) {
+                transferred = copied;
+                bzero(expanded, kMaxProbe);
+                IOFree(expanded, kMaxProbe);
+                transformedHits++;
+                uvcpMark("uvcpHitDesc", transformedHits);
+                return kIOReturnSuccess;
+            }
+        }
+        bzero(expanded, kMaxProbe);
+        IOFree(expanded, kMaxProbe);
+        failedHits++;
+        uvcpMark("uvcpFailDesc", failedHits);
+        return r != kIOReturnSuccess ? r : kIOReturnUnderrun;
     }
 
     // Raw-buffer path (rare for this camera, kept for parity).
