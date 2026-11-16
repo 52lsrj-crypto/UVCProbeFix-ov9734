@@ -1,6 +1,7 @@
 // Sequoia 24A335 adaptation of the supplied Tahoe Frame4->Frame1 fix.
 // Copyright © 2026 DNMTechLabs. All rights reserved.
 #include "UVCSequoia.hpp"
+#include <os/log.h>
 #include "UVCSequoiaProbePatch.hpp"
 
 #include <Headers/kern_api.hpp>
@@ -104,6 +105,8 @@ static void patcherLoaded(void *, KernelPatcher &patcher) {
 }
 
 bool start() {
+    os_log(OS_LOG_DEFAULT, "uvcpdbg pluginStart reached: UVCSequoia::start() Darwin=%d.%d",
+           static_cast<int>(getKernelVersion()), static_cast<int>(getKernelMinorVersion()));
     if (!UVCSequoiaProbePatch::isSupportedDarwinVersion(
             getKernelVersion(), getKernelMinorVersion())) {
         SYSLOG(MODULE_SHORT, "Sequoia build unsupported; no patch installed");
