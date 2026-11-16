@@ -179,22 +179,36 @@ static IOReturn requestHook(IOUSBHostDevice *device, IOService *client,
         uint32_t copied = 0;
         if (r == kIOReturnSuccess && actual > 0 && safeTransfer(actual, kMaxProbe)) {
             copied = actual < request.wLength ? actual : request.wLength;
-            const IOReturn w = descriptor->writeBytes(0, expanded, copied);
-            uvcpMark("uvcpDescW", static_cast<long long>(w));
-            if (w == kIOReturnSuccess) {
-                transferred = copied;
-                bzero(expanded, kMaxProbe);
-                IOFree(expanded, kMaxProbe);
-                transformedHits++;
-                uvcpMark("uvcpHitDesc", transformedHits);
-                return kIOReturnSuccess;
+            // The caller's descriptor is still unwired here: the USB framework
+            // normally calls prepare() only *after* our hook returns. A bare
+            // writeBytes() therefore panics with
+            // "IOGMD: not wired for the IODMACommand". Wire it ourselves the
+            // same way IOUSBHostDevice::deviceRequest would, then unwind.
+            const IOReturn pr = descriptor->prepare(kIODirectionIn);
+            uvcpMark("uvcpDescPrep", static_cast<long long>(pr));
+            if (pr == kIOReturnSuccess) {
+                const IOReturn w = descriptor->writeBytes(0, expanded, copied);
+                descriptor->complete(kIODirectionIn);
+                uvcpMark("uvcpDescW", static_cast<long long>(w));
+                if (w == kIOReturnSuccess) {
+                    transferred = copied;
+                    bzero(expanded, kMaxProbe);
+                    IOFree(expanded, kMaxProbe);
+                    transformedHits++;
+                    uvcpMark("uvcpHitDesc", transformedHits);
+                    return kIOReturnSuccess;
+                }
             }
         }
         bzero(expanded, kMaxProbe);
         IOFree(expanded, kMaxProbe);
         failedHits++;
         uvcpMark("uvcpFailDesc", failedHits);
-        return r != kIOReturnSuccess ? r : kIOReturnUnderrun;
+        // Never fail the caller: fall back to the stock path so the device is
+        // simply unpatched instead of erroring out (a kernel panic here means
+        // an unbootable machine, since uvcservice probes during early boot).
+        return passThrough(device, client, request, raw, descriptor,
+                           transferred, completion, timeout);
     }
 
     // Raw-buffer path (rare for this camera, kept for parity).
