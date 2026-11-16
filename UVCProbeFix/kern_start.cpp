@@ -365,6 +365,12 @@ static void pluginStart() {
         if (!UVCSequoia::start()) {
             SYSLOG(MODULE_SHORT, "Sequoia PROBE recovery inactive");
         }
+        // ov9734 port: the symbol hook is build-independent, so keep it alive on
+        // Sequoia instead of returning early. It only fires for whitelisted
+        // probe/commit GET_CUR requests from 13D3:56F8 / 04F2:B6BF.
+        if (!UVC15::start()) {
+            SYSLOG(MODULE_SHORT, "UVC1.5 lengthen module inactive on Sequoia");
+        }
         return;
     }
     // SEQUOIA_INTEGRATION_END
