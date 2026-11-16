@@ -12,6 +12,7 @@
 #include <Headers/kern_util.hpp>
 #include <IOKit/IOLib.h>
 #include <IOKit/usb/IOUSBHostDevice.h>
+#include <IOKit/IOMemoryDescriptor.h>
 #include <IOKit/IOBufferMemoryDescriptor.h>
 #include <sys/sysctl.h>
 #include <os/log.h>
@@ -31,7 +32,6 @@ static void uvcpMark(const char *key, long long value) {
     if (res != nullptr) {
         res->setProperty(key, static_cast<unsigned long long>(value), 64);
     }
-    os_log(OS_LOG_DEFAULT, "uvcpdbg %s=%lld", key, value);
 }
 
 static bool routeInstalled {false};
@@ -96,30 +96,6 @@ static IOReturn requestHook(IOUSBHostDevice *device, IOService *client,
                             uint32_t &transferred, IOUSBHostCompletion *completion,
                             uint32_t timeout) {
     if (originalRequest == nullptr) return kIOReturnUnsupported;
-    // Diagnostics: record the shape of every call so we can see whether the
-    // UVC assistant's requests even reach this hook.
-    // Classify every call: count the shapes we care about.
-    {
-        static int cA1 = 0, c81 = 0, cProbe = 0, cDesc = 0, cComp = 0, cAll = 0;
-        cAll++;
-        uvcpMark("uvcpAll", cAll);
-        if (request.bmRequestType == 0xA1) { cA1++; uvcpMark("uvcpA1", cA1); }
-        if (request.bRequest == 0x81) { c81++; uvcpMark("uvcp81", c81); }
-        if (request.wValue == 0x0100 || request.wValue == 0x0200) { cProbe++; uvcpMark("uvcpProbe", cProbe); }
-        if (descriptor != nullptr) { cDesc++; uvcpMark("uvcpDesc", cDesc); }
-        if (completion != nullptr) { cComp++; uvcpMark("uvcpComp", cComp); }
-    }
-    static int callSeq = 0;
-    callSeq++;
-    if (callSeq <= 64) {
-        uvcpMark("uvcpCalls", callSeq);
-        uvcpMark("uvcpType", static_cast<long long>(request.bmRequestType));
-        uvcpMark("uvcpReq", static_cast<long long>(request.bRequest));
-        uvcpMark("uvcpLen", static_cast<long long>(request.wLength));
-        uvcpMark("uvcpShape", static_cast<long long>(
-            (descriptor != nullptr ? 1 : 0) | (completion != nullptr ? 2 : 0) |
-            (raw != nullptr ? 4 : 0)));
-    }
     // Cheap rejection first: never touch descriptors or allocate for other USB IO.
     if (device == nullptr || request.bmRequestType != 0xA1 ||
         request.bRequest != 0x81 ||
@@ -177,31 +153,47 @@ static IOReturn requestHook(IOUSBHostDevice *device, IOService *client,
         uvcpMark("uvcpDescR", static_cast<long long>(r));
         uvcpMark("uvcpDescActual", static_cast<long long>(actual));
         uint32_t copied = 0;
-        if (r == kIOReturnSuccess && actual > 0 && safeTransfer(actual, kMaxProbe)) {
+        bool wrote = false;
+        if (r == kIOReturnSuccess && safeTransfer(actual, kMaxProbe)) {
             copied = actual < request.wLength ? actual : request.wLength;
-            // The caller's descriptor is still unwired here: the USB framework
-            // normally calls prepare() only *after* our hook returns. A bare
-            // writeBytes() therefore panics with
-            // "IOGMD: not wired for the IODMACommand". Wire it ourselves the
-            // same way IOUSBHostDevice::deviceRequest would, then unwind.
-            const IOReturn pr = descriptor->prepare(kIODirectionIn);
-            uvcpMark("uvcpDescPrep", static_cast<long long>(pr));
-            if (pr == kIOReturnSuccess) {
-                const IOReturn w = descriptor->writeBytes(0, expanded, copied);
-                descriptor->complete(kIODirectionIn);
-                uvcpMark("uvcpDescW", static_cast<long long>(w));
-                if (w == kIOReturnSuccess) {
-                    transferred = copied;
-                    bzero(expanded, kMaxProbe);
-                    IOFree(expanded, kMaxProbe);
-                    transformedHits++;
-                    uvcpMark("uvcpHitDesc", transformedHits);
-                    return kIOReturnSuccess;
+            if (copied > 0 && static_cast<uint64_t>(copied) <= descriptor->getLength()) {
+                // The caller's descriptor is still unwired here: the USB
+                // framework prepares it only after our hook returns, so a bare
+                // writeBytes() panics with
+                // "IOGMD: not wired for the IODMACommand". Primary path wires
+                // it the way IOUSBHostDevice::deviceRequest would.
+                const IOReturn pr = descriptor->prepare(kIODirectionIn);
+                uvcpMark("uvcpDescPrep", static_cast<long long>(pr));
+                if (pr == kIOReturnSuccess) {
+                    const IOReturn w = descriptor->writeBytes(0, expanded, copied);
+                    descriptor->complete(kIODirectionIn);
+                    uvcpMark("uvcpDescW", static_cast<long long>(w));
+                    wrote = (w == kIOReturnSuccess);
+                }
+                // Fallback that touches no DMA machinery at all: map the
+                // descriptor into the kernel and memcpy through the mapping.
+                if (!wrote) {
+                    IOMemoryMap *map = descriptor->map();
+                    uvcpMark("uvcpDescMap", static_cast<long long>(map != nullptr));
+                    if (map != nullptr) {
+                        void *dst = reinterpret_cast<void *>(map->getVirtualAddress());
+                        if (dst != nullptr) {
+                            memcpy(dst, expanded, copied);
+                            wrote = true;
+                        }
+                        map->release();
+                    }
                 }
             }
         }
         bzero(expanded, kMaxProbe);
         IOFree(expanded, kMaxProbe);
+        if (wrote) {
+            transferred = copied;
+            transformedHits++;
+            uvcpMark("uvcpHitDesc", transformedHits);
+            return kIOReturnSuccess;
+        }
         failedHits++;
         uvcpMark("uvcpFailDesc", failedHits);
         // Never fail the caller: fall back to the stock path so the device is
