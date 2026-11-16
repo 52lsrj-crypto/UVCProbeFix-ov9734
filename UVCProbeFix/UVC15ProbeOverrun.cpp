@@ -125,7 +125,9 @@ static IOReturn requestHook(IOUSBHostDevice *device, IOService *client,
         request.bRequest != 0x81 ||
         (request.wValue != 0x0100 && request.wValue != 0x0200) ||
         request.wLength == 0 || request.wLength >= kMaxProbe ||
-        raw == nullptr || descriptor != nullptr || completion != nullptr) {
+        completion != nullptr ||
+        (raw == nullptr && descriptor == nullptr) ||
+        (raw != nullptr && descriptor != nullptr)) {
         return passThrough(device, client, request, raw, descriptor,
                            transferred, completion, timeout);
     }
@@ -186,6 +188,9 @@ static IOReturn requestHook(IOUSBHostDevice *device, IOService *client,
                            transferred, completion, timeout);
     }
 
+    // Raw-buffer path (rare for this camera, kept for parity).
+    if (raw == nullptr) return passThrough(device, client, request, raw, descriptor,
+                                           transferred, completion, timeout);
     // Never expose a device-long transfer to Apple's short receive buffer.
     void *expanded = IOMalloc(kMaxProbe);
     if (expanded == nullptr) {
