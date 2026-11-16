@@ -157,17 +157,26 @@ static void loaded(void *, KernelPatcher &patcher,
 }
 
 bool start() {
+    SYSLOG(MODULE_SHORT, "UVC1.5 start() entered (Darwin %d)", static_cast<int>(getKernelVersion()));
     if (checkKernelArgument("-uvc15off")) {
         SYSLOG(MODULE_SHORT, "UVC1.5 disabled by -uvc15off");
         return true;
     }
-    if (!supportedKernel()) return false;
-    const auto error = lilu.onKextLoad(&hostInfo, 1, loaded, nullptr);
+    if (!supportedKernel()) {
+        SYSLOG(MODULE_SHORT, "UVC1.5 kernel %d unsupported", static_cast<int>(getKernelVersion()));
+        return false;
+    }
+    // IOUSBHostFamily is a prelinked built-in kext: it is already resident
+    // before this plugin runs. Plain onKextLoad() only fires for kexts loaded
+    // AFTER registration, so the callback never ran on real hardware and no
+    // hook was ever installed. onKextLoadForce() replays it for live kexts.
+    const auto error = lilu.onKextLoadForce(&hostInfo, 1, loaded, nullptr);
     if (error != LiluAPI::Error::NoError) {
         SYSLOG(MODULE_SHORT, "UVC1.5 failed to register IOUSBHostFamily (%d)",
                static_cast<int>(error));
         return false;
     }
+    SYSLOG(MODULE_SHORT, "UVC1.5 registered force-load watcher for IOUSBHostFamily");
     return true;
 }
 }
