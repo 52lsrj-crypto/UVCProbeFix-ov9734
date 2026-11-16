@@ -23,6 +23,16 @@ using RequestFunction = IOReturn (*)(IOUSBHostDevice *, IOService *,
     StandardUSB::DeviceRequest &, void *, IOMemoryDescriptor *,
     uint32_t &, IOUSBHostCompletion *, uint32_t);
 static RequestFunction originalRequest {nullptr};
+
+// ---- IORegistry-visible state (ioreg -c IOResources -l | grep uvcp) ----
+static void uvcpMark(const char *key, long long value) {
+    auto *res = IOService::getResourceService();
+    if (res != nullptr) {
+        res->setProperty(key, static_cast<unsigned long long>(value), 64);
+    }
+    os_log(OS_LOG_DEFAULT, "uvcpdbg %s=%lld", key, value);
+}
+
 static bool routeInstalled {false};
 static uint32_t logBudget {4};
 
@@ -114,8 +124,7 @@ static IOReturn requestHook(IOUSBHostDevice *device, IOService *client,
 
     __atomic_add_fetch(&statHits, 1, __ATOMIC_RELAXED);
 
-    os_log(OS_LOG_DEFAULT, "uvcpdbg hook hit wValue=0x%04x wIndex=%u wLen=%u",
-           request.wValue, request.wIndex, request.wLength);
+    uvcpMark("uvcpHit", static_cast<long long>(request.wLength));
     // Never expose a device-long transfer to Apple's short receive buffer.
     void *expanded = IOMalloc(kMaxProbe);
     if (expanded == nullptr) {
@@ -152,8 +161,7 @@ static IOReturn requestHook(IOUSBHostDevice *device, IOService *client,
                    static_cast<unsigned>(result), actual);
         }
     }
-    os_log(OS_LOG_DEFAULT, "uvcpdbg result=0x%08x actual=%u copied=%u",
-           static_cast<unsigned>(result), actual, copied);
+    uvcpMark("uvcpResult", static_cast<long long>(result == kIOReturnSuccess ? actual : -1));
     bzero(expanded, kMaxProbe);
     IOFree(expanded, kMaxProbe);
     if (copied > 0) return kIOReturnSuccess;
@@ -163,22 +171,19 @@ static IOReturn requestHook(IOUSBHostDevice *device, IOService *client,
 static void loaded(void *, KernelPatcher &patcher,
                    size_t index, mach_vm_address_t slide, size_t size) {
     __atomic_add_fetch(&statLoaded, 1, __ATOMIC_RELAXED);
-    os_log(OS_LOG_DEFAULT, "uvcpdbg loaded() cb routeInstalled=%d size=%zu", routeInstalled ? 1 : 0, size);
+    uvcpMark("uvcpLoaded", static_cast<long long>(size));
     if (routeInstalled || size == 0 || !supportedKernel()) return;
     const auto target = patcher.solveSymbol(index, kSymbol, slide, size, false);
-    os_log(OS_LOG_DEFAULT, "uvcpdbg symbol=%llu", (unsigned long long)target);
+    uvcpMark("uvcpSymbol", static_cast<long long>(target != 0));
     if (target == 0) {
         patcher.clearError();
         SYSLOG(MODULE_SHORT, "UVC1.5 symbol unavailable; not installing hook");
         return;
     }
     __atomic_add_fetch(&statSymbol, 1, __ATOMIC_RELAXED);
-    os_log(OS_LOG_DEFAULT, "uvcpdbg prologue=%02x%02x%02x%02x",
-           reinterpret_cast<const uint8_t *>(target)[0],
-           reinterpret_cast<const uint8_t *>(target)[1],
-           reinterpret_cast<const uint8_t *>(target)[2],
-           reinterpret_cast<const uint8_t *>(target)[3]);
+    uvcpMark("uvcpProlog", 1);
     if (!verifiedPrologue(reinterpret_cast<const uint8_t *>(target))) {
+        uvcpMark("uvcpProlog", -1);
         SYSLOG(MODULE_SHORT, "UVC1.5 unverified/already-routed prologue; skipped");
         return;
     }
@@ -186,13 +191,14 @@ static void loaded(void *, KernelPatcher &patcher,
     if (!patcher.routeMultiple(index, &route, 1, slide, size, true, false) ||
         originalRequest == nullptr) {
         patcher.clearError();
+        uvcpMark("uvcpRoute", -1);
         SYSLOG(MODULE_SHORT, "UVC1.5 route failed; recovery disabled");
         return;
     }
     __atomic_add_fetch(&statProlog, 1, __ATOMIC_RELAXED);
     __atomic_add_fetch(&statRouted, 1, __ATOMIC_RELAXED);
     routeInstalled = true;
-    os_log(OS_LOG_DEFAULT, "uvcpdbg ROUTE INSTALLED");
+    uvcpMark("uvcpRoute", 1);
     SYSLOG(MODULE_SHORT,
            "UVC1.5 GET_CUR lengthen route active (13D3:56F8 / 04F2:B6BF, Darwin %d)",
            static_cast<int>(getKernelVersion()));
@@ -201,7 +207,7 @@ static void loaded(void *, KernelPatcher &patcher,
 
 bool start() {
     __atomic_add_fetch(&statStart, 1, __ATOMIC_RELAXED);
-    os_log(OS_LOG_DEFAULT, "uvcpdbg start() entered Darwin=%d", static_cast<int>(getKernelVersion()));
+    uvcpMark("uvcpStart", static_cast<long long>(getKernelVersion()));
     if (checkKernelArgument("-uvc15off")) {
         SYSLOG(MODULE_SHORT, "UVC1.5 disabled by -uvc15off");
         return true;
