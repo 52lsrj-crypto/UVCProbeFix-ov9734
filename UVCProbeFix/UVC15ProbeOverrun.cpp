@@ -12,6 +12,7 @@
 #include <Headers/kern_util.hpp>
 #include <IOKit/IOLib.h>
 #include <IOKit/usb/IOUSBHostDevice.h>
+#include <IOKit/IOBufferMemoryDescriptor.h>
 #include <sys/sysctl.h>
 #include <os/log.h>
 #include <string.h>
@@ -34,6 +35,8 @@ static void uvcpMark(const char *key, long long value) {
 }
 
 static bool routeInstalled {false};
+static int transformedHits {0};
+static int failedHits {0};
 static uint32_t logBudget {4};
 
 // ---- observable counters (read via: sysctl kern.uvcp*) ----
@@ -149,6 +152,40 @@ static IOReturn requestHook(IOUSBHostDevice *device, IOService *client,
     __atomic_add_fetch(&statHits, 1, __ATOMIC_RELAXED);
 
     uvcpMark("uvcpHit", static_cast<long long>(request.wLength));
+    // The UVC assistant issues probe/commit GET_CUR with an IOMemoryDescriptor
+    // rather than a raw buffer. Enlarge into our own DMA buffer, then copy the
+    // device's reply back into the caller's descriptor.
+    if (descriptor != nullptr && completion == nullptr) {
+        IOBufferMemoryDescriptor *buf = nullptr;
+        buf = IOBufferMemoryDescriptor::inTaskWithOptions(kernel_task, 0, kMaxProbe, 1);
+        if (buf != nullptr) {
+            buf->prepare(kIODirectionIn);
+            StandardUSB::DeviceRequest enlarged = request;
+            enlarged.wLength = kMaxProbe;
+            uint32_t actual = 0;
+            const IOReturn r = originalRequest(device, client, enlarged, nullptr,
+                                               buf, actual, nullptr, timeout);
+            buf->complete(kIODirectionIn);
+            uint32_t copied = 0;
+            if (r == kIOReturnSuccess && actual > 0) {
+                copied = actual < request.wLength ? actual : request.wLength;
+                const IOReturn w = descriptor->writeBytes(0, buf->getBytesNoCopy(), copied);
+                if (w == kIOReturnSuccess) {
+                    buf->release();
+                    transformedHits++;
+                    uvcpMark("uvcpHitDesc", transformedHits);
+                    return kIOReturnSuccess;
+                }
+            }
+            buf->release();
+            failedHits++;
+            uvcpMark("uvcpFailDesc", failedHits);
+            return r;
+        }
+        return passThrough(device, client, request, raw, descriptor,
+                           transferred, completion, timeout);
+    }
+
     // Never expose a device-long transfer to Apple's short receive buffer.
     void *expanded = IOMalloc(kMaxProbe);
     if (expanded == nullptr) {
