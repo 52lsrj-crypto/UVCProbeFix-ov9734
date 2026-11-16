@@ -13,6 +13,7 @@
 #include <IOKit/IOLib.h>
 #include <IOKit/usb/IOUSBHostDevice.h>
 #include <sys/sysctl.h>
+#include <os/log.h>
 #include <string.h>
 
 #define MODULE_SHORT "uvcp"
@@ -113,6 +114,8 @@ static IOReturn requestHook(IOUSBHostDevice *device, IOService *client,
 
     __atomic_add_fetch(&statHits, 1, __ATOMIC_RELAXED);
 
+    os_log(OS_LOG_DEFAULT, "uvcpdbg hook hit wValue=0x%04x wIndex=%u wLen=%u",
+           request.wValue, request.wIndex, request.wLength);
     // Never expose a device-long transfer to Apple's short receive buffer.
     void *expanded = IOMalloc(kMaxProbe);
     if (expanded == nullptr) {
@@ -149,6 +152,8 @@ static IOReturn requestHook(IOUSBHostDevice *device, IOService *client,
                    static_cast<unsigned>(result), actual);
         }
     }
+    os_log(OS_LOG_DEFAULT, "uvcpdbg result=0x%08x actual=%u copied=%u",
+           static_cast<unsigned>(result), actual, copied);
     bzero(expanded, kMaxProbe);
     IOFree(expanded, kMaxProbe);
     if (copied > 0) return kIOReturnSuccess;
@@ -158,14 +163,21 @@ static IOReturn requestHook(IOUSBHostDevice *device, IOService *client,
 static void loaded(void *, KernelPatcher &patcher,
                    size_t index, mach_vm_address_t slide, size_t size) {
     __atomic_add_fetch(&statLoaded, 1, __ATOMIC_RELAXED);
+    os_log(OS_LOG_DEFAULT, "uvcpdbg loaded() cb routeInstalled=%d size=%zu", routeInstalled ? 1 : 0, size);
     if (routeInstalled || size == 0 || !supportedKernel()) return;
     const auto target = patcher.solveSymbol(index, kSymbol, slide, size, false);
+    os_log(OS_LOG_DEFAULT, "uvcpdbg symbol=%llu", (unsigned long long)target);
     if (target == 0) {
         patcher.clearError();
         SYSLOG(MODULE_SHORT, "UVC1.5 symbol unavailable; not installing hook");
         return;
     }
     __atomic_add_fetch(&statSymbol, 1, __ATOMIC_RELAXED);
+    os_log(OS_LOG_DEFAULT, "uvcpdbg prologue=%02x%02x%02x%02x",
+           reinterpret_cast<const uint8_t *>(target)[0],
+           reinterpret_cast<const uint8_t *>(target)[1],
+           reinterpret_cast<const uint8_t *>(target)[2],
+           reinterpret_cast<const uint8_t *>(target)[3]);
     if (!verifiedPrologue(reinterpret_cast<const uint8_t *>(target))) {
         SYSLOG(MODULE_SHORT, "UVC1.5 unverified/already-routed prologue; skipped");
         return;
@@ -180,6 +192,7 @@ static void loaded(void *, KernelPatcher &patcher,
     __atomic_add_fetch(&statProlog, 1, __ATOMIC_RELAXED);
     __atomic_add_fetch(&statRouted, 1, __ATOMIC_RELAXED);
     routeInstalled = true;
+    os_log(OS_LOG_DEFAULT, "uvcpdbg ROUTE INSTALLED");
     SYSLOG(MODULE_SHORT,
            "UVC1.5 GET_CUR lengthen route active (13D3:56F8 / 04F2:B6BF, Darwin %d)",
            static_cast<int>(getKernelVersion()));
@@ -188,7 +201,7 @@ static void loaded(void *, KernelPatcher &patcher,
 
 bool start() {
     __atomic_add_fetch(&statStart, 1, __ATOMIC_RELAXED);
-    SYSLOG(MODULE_SHORT, "UVC1.5 start() entered (Darwin %d)", static_cast<int>(getKernelVersion()));
+    os_log(OS_LOG_DEFAULT, "uvcpdbg start() entered Darwin=%d", static_cast<int>(getKernelVersion()));
     if (checkKernelArgument("-uvc15off")) {
         SYSLOG(MODULE_SHORT, "UVC1.5 disabled by -uvc15off");
         return true;
