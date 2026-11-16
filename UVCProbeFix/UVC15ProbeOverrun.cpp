@@ -95,6 +95,17 @@ static IOReturn requestHook(IOUSBHostDevice *device, IOService *client,
     if (originalRequest == nullptr) return kIOReturnUnsupported;
     // Diagnostics: record the shape of every call so we can see whether the
     // UVC assistant's requests even reach this hook.
+    // Classify every call: count the shapes we care about.
+    {
+        static int cA1 = 0, c81 = 0, cProbe = 0, cDesc = 0, cComp = 0, cAll = 0;
+        cAll++;
+        uvcpMark("uvcpAll", cAll);
+        if (request.bmRequestType == 0xA1) { cA1++; uvcpMark("uvcpA1", cA1); }
+        if (request.bRequest == 0x81) { c81++; uvcpMark("uvcp81", c81); }
+        if (request.wValue == 0x0100 || request.wValue == 0x0200) { cProbe++; uvcpMark("uvcpProbe", cProbe); }
+        if (descriptor != nullptr) { cDesc++; uvcpMark("uvcpDesc", cDesc); }
+        if (completion != nullptr) { cComp++; uvcpMark("uvcpComp", cComp); }
+    }
     static int callSeq = 0;
     callSeq++;
     if (callSeq <= 64) {
